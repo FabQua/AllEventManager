@@ -3,19 +3,19 @@ AllEventManager - Annotation Like Loading Event Manager
 
 Description
 -------------------
-The AllEventManager (Annotaion Like Loading Event Manager) is an event manager
-which helps organizing event handler of objects in a central scope and
-with automatically loading the event handlers of objects.
+The AllEventManager (Annotaion Like Loading Event Manager) helps to organize
+communcation between objects in a central point. It allows you to register an
+object which is then scanned for properties that are event handlers.
 
 Basic features:
-- Register a context (including its event handler)
-- Unregister a context (including its event handler)
+- Register a context (including its event handlers)
+- Unregister a context (including its event handlers)
 - Group the contexts up (optional)
 - Dispatch events in specific scope
 
 # How it works
 
-Example
+Simple example
 -------
 Prepare an object:
 ```js
@@ -59,12 +59,17 @@ AllEventManager.register(obj, "group2"); // register context in group group2
 
 AllEventManager.dispatchEvent("firstcalled", {}); // dispatch event in global scope
 AllEventManager.dispatchEvent("secondcalled", {}, "group1"); // dispatch event in group1
-AllEventManager.dispatchEvent("thirdcalled", {}), "group2"; // dispatch event in group2
+AllEventManager.dispatchEvent("thirdcalled", {}, "group2"); // dispatch event in group2
 
 firstCalled // true
 obj.secondCalled // true
 obj.thirdCalled // true
 ```
+
+Advanced example:
+----------------
+function Site() {
+}
 
 
 # Technologies
