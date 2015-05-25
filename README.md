@@ -40,7 +40,6 @@ obj.onThirdCalled = function(event) {
 Case 1:
 -------
 ```js
-// add object
 AllEventManager.register(obj);
 
 AllEventManager.dispatchEvent("firstcalled", {});
@@ -54,7 +53,6 @@ obj.thirdCalled // true
 
 Case 2:
 ```js
-// add object
 AllEventManager.register(obj); // register context in global scope
 AllEventManager.register(obj, "group1"); // register context in group group1
 AllEventManager.register(obj, "group2"); // register context in group group2
@@ -84,6 +82,7 @@ Coming soon...
 
 # TODO
 - add more tests
+- add jshint to grunt tasks
 
 # License
 The MIT License (MIT)
