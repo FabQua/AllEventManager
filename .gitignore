@@ -1,6 +1,9 @@
 # project #
 ###########
-
+# just used for development #
+/project/js/
+# just used for tests #
+/test/
 
 # nodejs #
 ##########
@@ -8,9 +11,7 @@
 
 # editing tools #
 #################
-
 # NetBeans #
-############
 /nbproject/
 
 # Packages #
