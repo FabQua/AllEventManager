@@ -68,8 +68,7 @@ obj.thirdCalled // true
 
 Advanced example:
 ----------------
-function Site() {
-}
+[See](project/examples/advanced/advanced.html) advanced.html
 
 
 # Technologies

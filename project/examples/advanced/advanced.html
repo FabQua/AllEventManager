@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>AllEventManager Advanced Example</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script type="text/javascript" src="jquery.min.js"></script>
+        <script type="text/javascript" src="alleventmanager.min.js"></script>
+        <script>
+            function HTitle(domTitle) {
+                this.domTitle = domTitle;
+
+                this.onContentChanged = function (event) {
+                    var data = event.getData();
+
+                    if (data.hasOwnProperty("title")) {
+                        this.domTitle.html(data.title);
+                    }
+                };
+                this.onSessionExpired = function (event) {
+                    AllEventManager.unregister(this);
+                };
+            }
+
+            function HTimer(domRTimer) {
+                this.timer;
+                this.domRTimer = domRTimer;
+                this.sessionTime;
+                this.setUpTimer = function () {
+
+                };
+                this.onTimerUpdated = function (event) {
+
+                };
+                this.onSessionExpired = function (event) {
+                    AllEventManager.unregister(this);
+                };
+            }
+
+            function MEntry(domA) {
+                this.entry = domA;
+                this.onMenuEntrySwitched = function (event) {
+                    var data = event.getData();
+                    var src = data.src;
+
+                    if (src === this.entry.get(0)) {
+                        this.entry.css("color", "blue");
+                    } else {
+                        this.entry.css("color", "black");
+                    }
+                };
+            }
+
+            function Site() {
+                this.init = function () {
+                    var hTitle = new HTitle();
+                    var hTimer = new HTimer();
+
+                    AllEventManager.register(this);
+                    AllEventManager.register(hTitle, "header");
+                    AllEventManager.register(hTimer, "header");
+                };
+                this.logout = function () {
+                    // do logout
+                };
+                this.loadContent = function (contentName) {
+                    // imagine this method would do ajax requests and the response would be
+                    switch (contentName) {
+                        case "Login":
+                            (function () {
+                                var content = $("#content");
+                                content.empty();
+                                content.add("");
+                                AllEventManager.dispatchEvent("contentchanged", {
+                                    title: "Login"
+                                });
+                            })();
+                            break;
+                        case "Form 2":
+                            (function () {
+                                AllEventManager.dispatchEvent("contentchanged", {
+                                    title: ""
+                                });
+                            })();
+                            break;
+                        case "Form 3":
+                            (function () {
+                                AllEventManager.dispatchEvent("contentchanged", {
+                                    title: ""
+                                });
+                            })();
+                            break;
+                        default:
+                            (function () {
+                                AllEventManager.dispatchEvent("contentchanged", {
+                                    title: ""
+                                });
+                            })();
+                            break;
+                    }
+                };
+                this.onMenuEntrySwitched = function (event) {
+                    var data = event.getData();
+
+                    this.loadContent(data.name);
+                };
+                this.onSessionExpired = function (event) {
+                    AllEventManager.unregister(this);
+                    this.logout();
+                };
+            }
+
+            $(document).ready(function () {
+
+            });
+        </script>
+    </head>
+    <body>
+        <h2 id="title">
+
+        </h2>
+        <div>
+            <div style="float: left; width: 30%;">
+                <div style="padding: 8px 4px;">
+                    <div style="cursor: pointer;" onclick="AllEventManager.dispatchEvent('menuentryswitched', {src: this, content: 'Login'})">
+                        Login
+                    </div>
+                </div>
+                <div style="padding: 8px 4px;">
+                    <div style="cursor: pointer;" onclick="AllEventManager.dispatchEvent('menuentryswitched', {src: this, content: 'Form 2'})">
+                        Form 2
+                    </div>
+                </div>
+                <div style="padding: 8px 4px;">
+                    <div style="cursor: pointer;" onclick="AllEventManager.dispatchEvent('menuentryswitched', {src: this, content: 'Form 3'})">
+                        Form 3
+                    </div>
+                </div>
+            </div>
+            <div id="content" style="float: left; width: 70%;">
+
+            </div>
+            <div style="clear: both;">
+
+            </div>
+        </div>
+    </body>
+</html>

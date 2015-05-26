@@ -6,6 +6,19 @@ module.exports = function () {
     var EventManager = (require("src/manager/EventManager.js"))();
 
     describe("EventManager", function () {
+        function WithEventHandler(name) {
+            this.name = name;
+            this.onFirst = function(event) {};
+            this.onSecond = function(event) {};
+        }
+        
+        function WithoutEventHandler(name) {
+            this.name = name;
+            this.anyFunction = function() {};
+            this.anyProperty = {};
+        }
+        
+        
         /**
          * 
          * @type EventManager
@@ -17,10 +30,7 @@ module.exports = function () {
         });
 
         it("should be able to add elements", function () {
-            var testObject = {
-                onFirst: function(event) {},
-                onSecond: function(event) {}
-            };
+            var testObject = new WithEventHandler("Object 1");
             var testObject2 = {
                 onFirst: function(event) {},
                 onSecond: function(event) {}
