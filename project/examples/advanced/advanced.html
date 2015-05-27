@@ -23,32 +23,47 @@
             }
 
             function HTimer(domRTimer) {
-                this.timer;
                 this.domRTimer = domRTimer;
+                this.interval;
                 this.sessionTime;
-                this.setUpTimer = function () {
-
+                this.setUpTimer = function (date) {
+                    if(this.interval) {
+                        clearInterval(this.interval);
+                    } else {
+                        setInterval(function () {
+                            
+                        });
+                    }
                 };
                 this.onTimerUpdated = function (event) {
-
+                    var data = event.getData();
+                    
+                    this.setUpTimer(data.time);
                 };
                 this.onSessionExpired = function (event) {
+                    if(this.interval) {
+                        clearInterval(this.interval);
+                    }
                     AllEventManager.unregister(this);
                 };
             }
 
             function MEntry(domA) {
-                this.entry = domA;
+                this.domEntry = domA;
                 this.onMenuEntrySwitched = function (event) {
                     var data = event.getData();
                     var src = data.src;
 
-                    if (src === this.entry.get(0)) {
-                        this.entry.css("color", "blue");
+                    if (src === this.domEntry.get(0)) {
+                        this.domEntry.css("color", "blue");
                     } else {
-                        this.entry.css("color", "black");
+                        this.domEntry.css("color", "black");
                     }
                 };
+            }
+            
+            function CCounter(domCounter) {
+                this.counter = domCounter;
             }
 
             function Site() {
@@ -117,23 +132,23 @@
     </head>
     <body>
         <h2 id="title">
-
+            AllEventManager - Advanced Example
         </h2>
         <div>
             <div style="float: left; width: 30%;">
                 <div style="padding: 8px 4px;">
-                    <div style="cursor: pointer;" onclick="AllEventManager.dispatchEvent('menuentryswitched', {src: this, content: 'Login'})">
-                        Login
+                    <div style="cursor: pointer;" onclick="AllEventManager.dispatchEvent('menuentryswitched', {src: this, content: 'counter'})">
+                        Counter
                     </div>
                 </div>
                 <div style="padding: 8px 4px;">
-                    <div style="cursor: pointer;" onclick="AllEventManager.dispatchEvent('menuentryswitched', {src: this, content: 'Form 2'})">
-                        Form 2
+                    <div style="cursor: pointer;" onclick="AllEventManager.dispatchEvent('menuentryswitched', {src: this, content: 'form'})">
+                        
                     </div>
                 </div>
                 <div style="padding: 8px 4px;">
                     <div style="cursor: pointer;" onclick="AllEventManager.dispatchEvent('menuentryswitched', {src: this, content: 'Form 3'})">
-                        Form 3
+                        
                     </div>
                 </div>
             </div>
