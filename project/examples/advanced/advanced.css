@@ -1,23 +1,58 @@
 
 body {
+    padding-top: 15px;
     width: 1200px;
     margin: auto;
 }
 
-#timer {
+#banner {
+    border-bottom: 1px solid lightgray;
+}
+
+#timer_container {
     float: right;
 }
 
-#menu, #content {
+#menu, #content, #menu .half {
     float: left;
 }
 
 #menu {
-    width: 30%;
+    width: 200px;
+    box-shadow: 5px 0px 5px -5px #dddddd;
+}
+
+#menu .header, #menu .sub, #menu .entry {
+    text-align: center;
+    padding: 8px 4px;
+}
+
+#menu .header {
+    font-weight: bold;
+}
+
+#menu .entry {
+    text-align: center;
+    cursor: pointer;
+}
+
+#menu .entry:hover {
+    background: #ffffff;
+    background: -moz-linear-gradient(left, #ffffff 0%, #fafafa 50%, #ffffff 100%);
+    background: -webkit-gradient(left top, right top, color-stop(0%, #ffffff), color-stop(50%, #fafafa), color-stop(100%, #ffffff));
+    background: -webkit-linear-gradient(left, #ffffff 0%, #fafafa 50%, #ffffff 100%);
+    background: -o-linear-gradient(left, #ffffff 0%, #fafafa 50%, #ffffff 100%);
+    background: -ms-linear-gradient(left, #ffffff 0%, #fafafa 50%, #ffffff 100%);
+    background: linear-gradient(to right, #ffffff 0%, #fafafa 50%, #ffffff 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#ffffff', GradientType=1 );
+}
+
+#menu .half {
+    width: 50%;
 }
 
 #content {
-    width: 70%;
+    width: 1000px;
 }
 
 #content div.square {
@@ -25,8 +60,18 @@ body {
     padding: 10px;
     margin-right: 10px;
     margin-bottom: 10px;
+    width: 25px;
+    height: 25px;
+}
+
+div.header {
+    border-bottom: 1px solid #EEEEEE;
 }
 
 div.container {
     padding: 10px;
+}
+
+div.clear {
+    clear: both;
 }

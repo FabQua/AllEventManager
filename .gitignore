@@ -1,5 +1,7 @@
 # project #
 ###########
+# create your own dist #
+/dist/
 # just used for development #
 /project/js/
 # just used for tests #

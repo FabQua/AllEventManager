@@ -8,54 +8,91 @@
         <script type="text/javascript" src="http://code.jquery.com/jquery-2.1.4.min.js"></script>
         <script type="text/javascript" src="../../../dist/alleventmanager.min.js"></script>
         <script>
-            function HFontSize(domElement) {
-                this.fontSize = domElement;
+            function simulateAjaxRequest(request) {
+                // imagine this method would do ajax requests and the response would be
+                switch (request) {
+                    case "addSquare":
+                        (function () {
+                            var content = $("#content");
+                            var div = content.append("div");
+                            div.addClass("square");
+                            AllEventManager.dispatchEvent("contentchanged", {
+                                title: "Login"
+                            });
+                        })();
+                        break;
+                    case "Form 2":
+                        (function () {
+                            AllEventManager.dispatchEvent("contentchanged", {
+                                title: ""
+                            });
+                        })();
+                        break;
+                    case "Form 3":
+                        (function () {
+                            AllEventManager.dispatchEvent("contentchanged", {
+                                title: ""
+                            });
+                        })();
+                        break;
+                    default:
+                        (function () {
+                            AllEventManager.dispatchEvent("contentchanged", {
+                                title: ""
+                            });
+                        })();
+                        break;
+                }
+            }
 
-                this.onFontSizeChanged = function (event) {
-                    var size = event.getData().size;
-                    
-                    this.fontSize.css("font-size", size);
-                    this.fontSize.html("Fontsize: " + size);
+            function FontSize(domElement) {
+                this.container = domElement;
+
+                this.onFontSizeIncreased = function (event) {
+                    var size = this.container.css("font-size") + 1;
+                    this.container.css("font-size", size);
+                    this.container.html("Fontsize: " + size);
+                };
+                this.onFontSizeDecreased = function (event) {
+                    var size = this.container.css("font-size") - 1;
+                    this.container.css("font-size", size);
+                    this.container.html("Fontsize: " + size);
                 };
                 this.onSessionExpired = function (event) {
                     AllEventManager.unregister(this);
                 };
             }
 
-            function HTimer(domRTimer) {
+            function SessionTimer(domRTimer) {
                 this.domRTimer = domRTimer;
                 this.interval;
                 this.sessionTime;
                 this.setUpTimer = function (date) {
-                    if(this.interval) {
+                    if (this.interval) {
                         clearInterval(this.interval);
                     } else {
                         setInterval(function () {
-                            
+
                         });
                     }
                 };
                 this.onTimerUpdated = function (event) {
                     var data = event.getData();
-                    
+
                     this.setUpTimer(data.time);
                 };
                 this.onSessionExpired = function (event) {
-                    if(this.interval) {
+                    if (this.interval) {
                         clearInterval(this.interval);
                     }
                     AllEventManager.unregister(this);
                 };
             }
-            
-            function CCounter(domCounter) {
-                this.counter = domCounter;
-            }
 
             function Site() {
                 this.init = function () {
                     var hTitle = new HFontSize();
-                    var hTimer = new HTimer();
+                    var hTimer = new SessionTimer();
 
                     AllEventManager.register(this);
                     AllEventManager.register(hTitle, "header");
@@ -64,46 +101,12 @@
                 this.logout = function () {
                     // do logout
                 };
-                this.loadContent = function (contentName) {
-                    // imagine this method would do ajax requests and the response would be
-                    switch (contentName) {
-                        case "Login":
-                            (function () {
-                                var content = $("#content");
-                                content.empty();
-                                content.add("");
-                                AllEventManager.dispatchEvent("contentchanged", {
-                                    title: "Login"
-                                });
-                            })();
-                            break;
-                        case "Form 2":
-                            (function () {
-                                AllEventManager.dispatchEvent("contentchanged", {
-                                    title: ""
-                                });
-                            })();
-                            break;
-                        case "Form 3":
-                            (function () {
-                                AllEventManager.dispatchEvent("contentchanged", {
-                                    title: ""
-                                });
-                            })();
-                            break;
-                        default:
-                            (function () {
-                                AllEventManager.dispatchEvent("contentchanged", {
-                                    title: ""
-                                });
-                            })();
-                            break;
-                    }
+                this.simulateAjaxRequest = function (action) {
                 };
                 this.onMenuEntrySwitched = function (event) {
                     var data = event.getData();
 
-                    this.loadContent(data.name);
+                    this.simulateAjaxRequest(data.name);
                 };
                 this.onSessionExpired = function (event) {
                     AllEventManager.unregister(this);
@@ -117,31 +120,60 @@
         </script>
     </head>
     <body>
-        <h2 id="title">
-            AllEventManager - Advanced Example
-        </h2>
+        <div class="container header">
+            <span id="fontsize">
+                Fontsize: 11
+            </span>
+            <div id="timer_container">
+                Session expired in <span id="timer">00:00:00</span>
+            </div>
+        </div>
         <div>
-            <div style="float: left; width: 30%;">
-                <div style="padding: 8px 4px;">
-                    <div style="cursor: pointer;" onclick="AllEventManager.dispatchEvent('menuentryswitched', {src: this, content: 'counter'})">
-                        Counter
-                    </div>
+            <div id="menu">
+                <div class="header">
+                    Square
                 </div>
-                <div style="padding: 8px 4px;">
-                    <div style="cursor: pointer;" onclick="AllEventManager.dispatchEvent('menuentryswitched', {src: this, content: 'form'})">
-                        
-                    </div>
+                <div class="entry" onclick="simulateAjaxRequest('addSquare')">
+                    Add
                 </div>
-                <div style="padding: 8px 4px;">
-                    <div style="cursor: pointer;" onclick="AllEventManager.dispatchEvent('menuentryswitched', {src: this, content: 'Form 3'})">
-                        
+                <div class="header">
+                    Fontsize
+                </div>
+                <div class="sub">
+                    Global
+                </div>
+                <div>
+                    <div class="half">
+                        <div class="entry" onclick="simulateAjaxRequest('globalDecrease')">
+                            -
+                        </div>
                     </div>
+                    <div class="half">
+                        <div class="entry" onclick="simulateAjaxRequest('globalIncrease')">
+                            +
+                        </div>
+                    </div>
+                    <div class="clear"></div>
+                </div>
+                <div class="sub">
+                    Content
+                </div>
+                <div>
+                    <div class="half">
+                        <div class="entry" onclick="simulateAjaxRequest('contentDecrease')">
+                            -
+                        </div>
+                    </div>
+                    <div class="half">
+                        <div class="entry" onclick="simulateAjaxRequest('globalIncrease')">
+                            +
+                        </div>
+                    </div>
+                    <div class="clear"></div>
                 </div>
             </div>
-            <div id="content" style="float: left; width: 70%;">
-
-            </div>
-            <div style="clear: both;">
+            <div id="content"></div>
+            <div class="clear">
 
             </div>
         </div>
