@@ -4,18 +4,18 @@
         <title>AllEventManager Advanced Example</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <script type="text/javascript" src="jquery.min.js"></script>
-        <script type="text/javascript" src="alleventmanager.min.js"></script>
+        <link type="text/css" rel="stylesheet" href="advanced.css" />
+        <script type="text/javascript" src="http://code.jquery.com/jquery-2.1.4.min.js"></script>
+        <script type="text/javascript" src="../../../dist/alleventmanager.min.js"></script>
         <script>
-            function HTitle(domTitle) {
-                this.domTitle = domTitle;
+            function HFontSize(domElement) {
+                this.fontSize = domElement;
 
-                this.onContentChanged = function (event) {
-                    var data = event.getData();
-
-                    if (data.hasOwnProperty("title")) {
-                        this.domTitle.html(data.title);
-                    }
+                this.onFontSizeChanged = function (event) {
+                    var size = event.getData().size;
+                    
+                    this.fontSize.css("font-size", size);
+                    this.fontSize.html("Fontsize: " + size);
                 };
                 this.onSessionExpired = function (event) {
                     AllEventManager.unregister(this);
@@ -47,20 +47,6 @@
                     AllEventManager.unregister(this);
                 };
             }
-
-            function MEntry(domA) {
-                this.domEntry = domA;
-                this.onMenuEntrySwitched = function (event) {
-                    var data = event.getData();
-                    var src = data.src;
-
-                    if (src === this.domEntry.get(0)) {
-                        this.domEntry.css("color", "blue");
-                    } else {
-                        this.domEntry.css("color", "black");
-                    }
-                };
-            }
             
             function CCounter(domCounter) {
                 this.counter = domCounter;
@@ -68,7 +54,7 @@
 
             function Site() {
                 this.init = function () {
-                    var hTitle = new HTitle();
+                    var hTitle = new HFontSize();
                     var hTimer = new HTimer();
 
                     AllEventManager.register(this);
