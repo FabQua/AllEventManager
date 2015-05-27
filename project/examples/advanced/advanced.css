@@ -1,0 +1,32 @@
+
+body {
+    width: 1200px;
+    margin: auto;
+}
+
+#timer {
+    float: right;
+}
+
+#menu, #content {
+    float: left;
+}
+
+#menu {
+    width: 30%;
+}
+
+#content {
+    width: 70%;
+}
+
+#content div.square {
+    float: left;
+    padding: 10px;
+    margin-right: 10px;
+    margin-bottom: 10px;
+}
+
+div.container {
+    padding: 10px;
+}
