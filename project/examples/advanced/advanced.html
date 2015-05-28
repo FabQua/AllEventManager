@@ -6,7 +6,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link type="text/css" rel="stylesheet" href="advanced.css" />
         <script type="text/javascript" src="http://code.jquery.com/jquery-2.1.4.min.js"></script>
-        <script type="text/javascript" src="../../../dist/alleventmanager.min.js"></script>
+        <script type="text/javascript" src="../../../dist/alleventmanager.js"></script>
         <script>
             function simulateAjaxRequest(request) {
                 // imagine this method would do ajax requests and the response would be
@@ -14,113 +14,160 @@
                     case "addSquare":
                         (function () {
                             var content = $("#content");
-                            var div = content.append("div");
-                            div.addClass("square");
-                            AllEventManager.dispatchEvent("contentchanged", {
-                                title: "Login"
+                            var div = $("<div></div>").addClass("square").html("click to remove").click(function (event) {
+                                AllEventManager.dispatchEvent("squareclicked", {
+                                    src: this
+                                }, "content");
                             });
+                            content.children().last().before(div);
+                            var square = new Square(div);
+                            AllEventManager.register(square, "content");
+                            AllEventManager.dispatchEvent("timerreset", {});
                         })();
                         break;
-                    case "Form 2":
+                    case "globalIncrease":
                         (function () {
-                            AllEventManager.dispatchEvent("contentchanged", {
-                                title: ""
-                            });
+                            AllEventManager.dispatchEvent("fontsizeincreased", {});
+                            AllEventManager.dispatchEvent("timerreset", {});
                         })();
                         break;
-                    case "Form 3":
+                    case "globalDecrease":
                         (function () {
-                            AllEventManager.dispatchEvent("contentchanged", {
-                                title: ""
-                            });
+                            AllEventManager.dispatchEvent("fontsizedecreased", {});
+                            AllEventManager.dispatchEvent("timerreset", {});
                         })();
                         break;
-                    default:
+                    case "contentIncrease":
                         (function () {
-                            AllEventManager.dispatchEvent("contentchanged", {
-                                title: ""
-                            });
+                            AllEventManager.dispatchEvent("fontsizeincreased", {}, "content");
+                            AllEventManager.dispatchEvent("timerreset", {});
+                        })();
+                        break;
+                    case "contentDecrease":
+                        (function () {
+                            AllEventManager.dispatchEvent("fontsizedecreased", {}, "content");
+                            AllEventManager.dispatchEvent("timerreset", {});
                         })();
                         break;
                 }
             }
 
-            function FontSize(domElement) {
-                this.container = domElement;
-
+            function FontResizer(domContainer) {
                 this.onFontSizeIncreased = function (event) {
-                    var size = this.container.css("font-size") + 1;
-                    this.container.css("font-size", size);
-                    this.container.html("Fontsize: " + size);
+                    var size = parseInt(domContainer.css("font-size")) + 1;
+                    
+                    if(size > 24) {
+                        size = 24;
+                    }
+                    
+                    domContainer.css("font-size", size);
                 };
                 this.onFontSizeDecreased = function (event) {
-                    var size = this.container.css("font-size") - 1;
-                    this.container.css("font-size", size);
-                    this.container.html("Fontsize: " + size);
+                    var size = parseInt(domContainer.css("font-size")) - 1;
+                    
+                    if(size < 10) {
+                        size = 10;
+                    }
+                    
+                    domContainer.css("font-size", size);
                 };
                 this.onSessionExpired = function (event) {
                     AllEventManager.unregister(this);
                 };
             }
-
-            function SessionTimer(domRTimer) {
-                this.domRTimer = domRTimer;
-                this.interval;
-                this.sessionTime;
-                this.setUpTimer = function (date) {
-                    if (this.interval) {
-                        clearInterval(this.interval);
-                    } else {
-                        setInterval(function () {
-
-                        });
-                    }
+            
+            function FontText(domElement) {
+                this.setFontSizeText = function () {
+                    var size = parseInt(domElement.css("font-size"));
+                    domElement.html("Fontsize: " + size + "px");
                 };
-                this.onTimerUpdated = function (event) {
-                    var data = event.getData();
-
-                    this.setUpTimer(data.time);
+                this.onFontSizeIncreased = function (event) {
+                    this.setFontSizeText();
+                };
+                this.onFontSizeDecreased = function (event) {
+                    this.setFontSizeText();
                 };
                 this.onSessionExpired = function (event) {
-                    if (this.interval) {
-                        clearInterval(this.interval);
+                    AllEventManager.unregister(this);
+                };
+                
+                this.setFontSizeText();
+            }
+
+            function SessionTimer(domTimer) {
+                var SESSION_LENGTH = 120;
+                var _remainingTime = SESSION_LENGTH;
+                var _interval;
+                
+                this.setUpInterval = function () {
+                    _interval = setInterval(function () {
+                        _remainingTime -= 1;
+                        
+                        if(_remainingTime > 0) {
+                            var h = Math.floor(_remainingTime / (60*60) % 24);
+                            var m = Math.floor(_remainingTime / 60 % 60);
+                            var s = Math.floor(_remainingTime % 60);
+                            
+                            var hs = h < 10 ? "0" + h : "" + h;
+                            var ms = m < 10 ? "0" + m : "" + m;
+                            var ss = s < 10 ? "0" + s : "" + s;
+                            
+                            domTimer.html(hs + ":" + ms + ":" + ss);
+                        } else {
+                            AllEventManager.dispatchEvent("sessionexpired", {});
+                            AllEventManager.dispatchEvent("sessionexpired", {}, "*");
+                        }
+                    }, 1000);
+                };
+                this.onTimerReset = function (event) {
+                    _remainingTime = SESSION_LENGTH;
+                };
+                this.onSessionExpired = function (event) {
+                    if (_interval) {
+                        clearInterval(_interval);
                     }
                     AllEventManager.unregister(this);
                 };
             }
-
-            function Site() {
-                this.init = function () {
-                    var hTitle = new HFontSize();
-                    var hTimer = new SessionTimer();
-
-                    AllEventManager.register(this);
-                    AllEventManager.register(hTitle, "header");
-                    AllEventManager.register(hTimer, "header");
-                };
-                this.logout = function () {
-                    // do logout
-                };
-                this.simulateAjaxRequest = function (action) {
-                };
-                this.onMenuEntrySwitched = function (event) {
-                    var data = event.getData();
-
-                    this.simulateAjaxRequest(data.name);
+            
+            function Square(domElement) {
+                this.square = domElement;
+                
+                this.onSquareClicked = function(event) {
+                    var clickedSquare = event.src;
+                    
+                    if(clickedSquare === this.square.get(0)) {
+                        AllEventManager.dispatchEvent("timerreset", {});
+                        clickedSquare.parentNode.removeChild(clickedSquare);
+                        AllEventManager.unregister(this);
+                    }
                 };
                 this.onSessionExpired = function (event) {
                     AllEventManager.unregister(this);
-                    this.logout();
                 };
             }
 
             $(document).ready(function () {
-
+                var fontResizerHeader = new FontResizer($("#header"));
+                var fontResizerMenu = new FontResizer($("#menu"));
+                var fontResizerContent = new FontResizer($("#content"));
+                var timer = new SessionTimer($("#timer"));
+                var fontSize = new FontText($("#fontsize"));
+                
+                timer.setUpInterval();
+                
+                AllEventManager.register(fontResizerHeader);
+                AllEventManager.register(fontResizerMenu);
+                AllEventManager.register(fontResizerContent);
+                AllEventManager.register(timer);
+                AllEventManager.register(fontSize);
+                
+                AllEventManager.register(fontResizerContent, "content");
             });
         </script>
     </head>
     <body>
-        <div class="container header">
+        <div id="header" class="container header">
             <span id="fontsize">
                 Fontsize: 11
             </span>
@@ -165,14 +212,18 @@
                         </div>
                     </div>
                     <div class="half">
-                        <div class="entry" onclick="simulateAjaxRequest('globalIncrease')">
+                        <div class="entry" onclick="simulateAjaxRequest('contentIncrease')">
                             +
                         </div>
                     </div>
                     <div class="clear"></div>
                 </div>
             </div>
-            <div id="content"></div>
+            <div id="content_outer">
+                <div id="content">
+                    <div class="clear"></div>
+                </div>
+            </div>
             <div class="clear">
 
             </div>

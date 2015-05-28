@@ -13,7 +13,7 @@ body {
     float: right;
 }
 
-#menu, #content, #menu .half {
+#menu, #content_outer, #menu .half {
     float: left;
 }
 
@@ -36,7 +36,7 @@ body {
     cursor: pointer;
 }
 
-#menu .entry:hover {
+#menu .entry:hover, #content div.square:hover {
     background: #ffffff;
     background: -moz-linear-gradient(left, #ffffff 0%, #fafafa 50%, #ffffff 100%);
     background: -webkit-gradient(left top, right top, color-stop(0%, #ffffff), color-stop(50%, #fafafa), color-stop(100%, #ffffff));
@@ -51,8 +51,12 @@ body {
     width: 50%;
 }
 
-#content {
+#content_outer {
     width: 1000px;
+}
+
+#content {
+    padding: 20px;
 }
 
 #content div.square {
@@ -60,8 +64,10 @@ body {
     padding: 10px;
     margin-right: 10px;
     margin-bottom: 10px;
-    width: 25px;
-    height: 25px;
+    width: 100px;
+    height: 100px;
+    cursor: pointer;
+    border: 1px solid black;
 }
 
 div.header {
