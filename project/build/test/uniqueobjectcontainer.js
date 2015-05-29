@@ -1,15 +1,15 @@
 module.exports = function () {
-    var UniqueObjectContainer = (require("src/common/UniqueObjectContainer.js"))();
+    var ObjectContainer = (require("src/common/ObjectContainer.js"))();
 
     describe("UniqueObjectContainer", function () {
         /**
          * 
-         * @type UniqueObjectContainer
+         * @type ObjectContainer
          */
         var container;
 
         beforeEach(function () {
-            container = new UniqueObjectContainer();
+            container = new ObjectContainer();
         });
 
         it("should be able add all type of elements", function () {

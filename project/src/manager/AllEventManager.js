@@ -8,7 +8,7 @@ module.exports = function () {
      * 
      * @type String
      */
-    var VERSION = "0.1";
+    var VERSION = "0.1.0";
     /**
      * 
      * @type EventManager.contructor
@@ -37,15 +37,15 @@ module.exports = function () {
          * @returns {undefined}
          */
         this.register = function (context, group) {
-            if(!group) {
-                if(!_defaultEventManager) {
+            if (!group) {
+                if (!_defaultEventManager) {
                     _defaultEventManager = new EventManager("Default");
                 }
-                
+
                 _defaultEventManager.register(context);
             } else {
-                if (typeof group === "string") {
-                    if(!(group in _groups)) {
+                if (typeof group === "string" && group !== "*") {
+                    if (!(group in _groups)) {
                         _groups[group] = new EventManager(group);
                     }
                     _groups[group].register(context);
@@ -62,11 +62,11 @@ module.exports = function () {
          * @returns {undefined}
          */
         this.unregister = function (context, group) {
-            if(!group) {
-                if(_defaultEventManager) {
+            if (!group) {
+                if (_defaultEventManager) {
                     _defaultEventManager.unregister(context);
-                    
-                    if(!_defaultEventManager.hasMembers()) {
+
+                    if (!_defaultEventManager.hasMembers()) {
                         _defaultEventManager = null;
                     }
                 }
@@ -89,19 +89,20 @@ module.exports = function () {
          * 
          * @param {string} eventName
          * @param {object} data
-         * @param {string} group The group name of which event group the event
-         * should be dispatched, or null if to dispatch in all groups (global)
+         * @param {string} group the name of the group, where the event should
+         * be dispatched. null | undefined for dispatching in global scope. "*"
+         * to dispatch in all groups.
          * @returns {undefined}
          */
         this.dispatchEvent = function (eventName, data, group) {
-            if(!group) {
+            if (!group) {
                 /*
                  * No group given, dispatching the event on global scope.
                  */
-                if(_defaultEventManager) {
+                if (_defaultEventManager) {
                     _defaultEventManager.dispatchEvent(eventName, data);
                 }
-            } else if(typeof group === "string") {
+            } else if (typeof group === "string") {
                 /*
                  * Group is given.
                  */
@@ -124,12 +125,33 @@ module.exports = function () {
                     }
                 }
             } else {
-                /*
-                 * 
-                 * @returns {undefined}
-                 */
                 throw new Error("Illegal group " + group);
             }
+        };
+
+        /**
+         * 
+         * @param {string} group
+         * @returns {Number}
+         */
+        this.getSize = function (group) {
+            var size = 0;
+
+            if (group) {
+                if (typeof group === "string") {
+                    if(group in _groups) {
+                        size = _groups[group].getSize();
+                    }
+                } else {
+                    throw new Error();
+                }
+            } else {
+                if (_defaultEventManager) {
+                    size = _defaultEventManager.getSize();
+                }
+            }
+
+            return size;
         };
 
         /**
@@ -141,6 +163,10 @@ module.exports = function () {
             _groups = {};
         };
     }
-
+    
+    /*
+     * Return a singleton of AllEventBus. The AllEventManager already allows
+     * to group up the contexts and uses multiple EventManager.
+     */
     return new AllEventBus();
 };

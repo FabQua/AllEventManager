@@ -6,9 +6,9 @@ module.exports = function () {
     var EventExtractor = (require("project/src/event/EventExtractor.js"))();
     /**
      * 
-     * @type UniqueObjectContainer
+     * @type ObjectContainer
      */
-    var UniqueObjectContainer = (require("project/src/common/UniqueObjectContainer.js"))();
+    var ObjectContainer = (require("project/src/common/ObjectContainer.js"))();
     /**
      * 
      * @type EventExtractor
@@ -35,9 +35,9 @@ module.exports = function () {
          * It contains all contexts, their handlers and all event types. This
          * container returns the UIDs for this elements.
          * 
-         * @type UniqueObjectContainer
+         * @type ObjectContainer
          */
-        var _uniqueObjectContainer = new UniqueObjectContainer();
+        var _objectContainer = new ObjectContainer();
 
         /**
          * Contains all event handler UIDs and the context UID it belongs to.
@@ -80,7 +80,7 @@ module.exports = function () {
          * @returns {Boolean}
          */
         function isRegistered(context) {
-            return _uniqueObjectContainer.contains(context);
+            return _objectContainer.containsElement(context);
         }
 
         /**
@@ -132,21 +132,6 @@ module.exports = function () {
             if (typeof EHUID === "string" && !(EHUID in _eventHandlerContext)) {
                 _eventHandlerContext[EHUID] = CUID;
             }
-        }
-
-        /**
-         * 
-         * @param {String} EHUID
-         * @returns {String} the CUID.
-         */
-        function getEventHandlerContext(EHUID) {
-            var CUID = null;
-
-            if (EHUID in _eventHandlerContext) {
-                CUID = _eventHandlerContext[EHUID];
-            }
-
-            return CUID;
         }
 
         /**
@@ -251,25 +236,25 @@ module.exports = function () {
             if (EHUID && typeof EHUID === "string") {
                 var CUID = _eventHandlerContext[EHUID];
 
-                context = _uniqueObjectContainer.getElement(CUID);
+                context = _objectContainer.getElement(CUID);
             }
 
             return context;
         }
 
         function registerContext(context) {
-            _uniqueObjectContainer.addElement(context);
-
-            var CUID = _uniqueObjectContainer.getUID(context);
+            var CUID = _objectContainer.addElement(context);
             var contextMS = addContextMembership(CUID);
 
             var events = _eventExtractor.extractEventHandler(context);
             events.forEach(function (event) {
-                _uniqueObjectContainer.addElement(event.eventHandler);
-                _uniqueObjectContainer.addElement(event.eventType);
-
-                var EHUID = _uniqueObjectContainer.getUID(event.eventHandler);
-                var ETUID = _uniqueObjectContainer.getUID(event.eventType);
+                var ETUID = _objectContainer.getUID(event.eventType);
+                
+                if(ETUID === null) {
+                    ETUID = _objectContainer.addElement(event.eventType);
+                }
+                
+                var EHUID = _objectContainer.addElement(event.eventHandler);
 
                 setEventHandlerContext(EHUID, CUID);
                 setEventHandlerType(EHUID, ETUID);
@@ -289,7 +274,7 @@ module.exports = function () {
         }
 
         function unregisterContext(context) {
-            var CUID = _uniqueObjectContainer.getUID(context);
+            var CUID = _objectContainer.getUID(context);
             var contextMS = getContextMembership(CUID);
 
             if (contextMS !== null) {
@@ -302,19 +287,19 @@ module.exports = function () {
 
                     if (eventTypeMS.length === 0) {
                         removeEventTypeMembership(ETUID);
-                        _uniqueObjectContainer.removeElement(_uniqueObjectContainer.getElement(ETUID));
+                        _objectContainer.removeElement(ETUID);
                     }
 
                     removeEventHandlerType(EHUID);
                     removeEventHandlerContext(EHUID);
 
-                    _uniqueObjectContainer.removeElement(_uniqueObjectContainer.getElement(EHUID));
+                    _objectContainer.removeElement(EHUID);
                 });
 
                 removeContextMembership(CUID);
             }
 
-            _uniqueObjectContainer.removeElement(context);
+            _objectContainer.removeElement(CUID);
             
             _length--;
         }
@@ -349,12 +334,12 @@ module.exports = function () {
          */
         this.dispatchEvent = function (eventType, data) {
             if (eventType !== null && typeof eventType === "string") {
-                var ETUID = _uniqueObjectContainer.getUID(eventType);
+                var ETUID = _objectContainer.getUID(eventType);
                 var eventTypeMS = getEventTypeMembership(ETUID);
 
                 if (eventTypeMS !== null) {
                     eventTypeMS.forEach(function (EHUID) {
-                        var eventHandler = _uniqueObjectContainer.getElement(EHUID);
+                        var eventHandler = _objectContainer.getElement(EHUID);
                         var context = getContextForEventHandler(EHUID);
 
                         if (eventHandler !== null) {
@@ -376,7 +361,7 @@ module.exports = function () {
          * @returns {boolean}
          */
         this.hasMembers = function () {
-            return _uniqueObjectContainer.getSize() > 0;
+            return _objectContainer.getSize() > 0;
         };
         
         /**
